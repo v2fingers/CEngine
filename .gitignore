@@ -1,0 +1,16 @@
+.vs/
+.idea/
+Intermediates/
+Binaries/
+Build/
+
+*.sln
+*.slnx
+**.spv
+**.emsh
+**.etex
+
+**.ninja_deps
+**.ninja_log
+**.ninja
+compile_commands.json
