@@ -1,6 +1,6 @@
-workspace("Test-Engine")
+workspace("CEngine")
 architecture("x64")
-configurations({ "Debug", "Release", "Dist" })
+configurations({ "Debug", "Release" })
 toolset("clang")
 
 function SetupProject()
@@ -26,12 +26,6 @@ function SetupProject()
 	optimize("On")
 	symbols("On")
 
-	filter("configurations:Dist")
-	defines({ "DIST" })
-	runtime("Release")
-	optimize("On")
-	symbols("Off")
-
 	filter({})
 end
 
@@ -48,6 +42,7 @@ files({
 })
 
 includedirs({
+  "Source/Runtime",
 	"Source/ThirdParty",
 	"Source/%{prj.name}",
 })
@@ -55,10 +50,10 @@ includedirs({
 links({
 	"vulkan",
 	"glfw",
-	"CTest",
+	"Runtime",
 })
 
-project("CTest")
+project("Runtime")
 kind("StaticLib")
 language("C")
 cdialect("C23")
