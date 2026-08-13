@@ -1,21 +1,21 @@
-#include "CWindow.h"
-#include "Logger.h"
-#include "Memory.h"
+#include "window.h"
+#include "logger.h"
+#include "memory.h"
 #include <GLFW/glfw3.h>
 
-void WindowInit(Window_t *window) {
+int window_init(struct window *window) {
   if (!window) {
     ERROR("Window pointer is null\n");
-    return;
+    return 1;
   }
   if (!glfwInit()) {
     ERROR("GLFW not initialized\n");
-    return;
+    return 1;
   }
   if (!glfwVulkanSupported()) {
     ERROR("Vulkan is not supported on this system\n");
     glfwTerminate();
-    return;
+    return 1;
   }
 
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -25,12 +25,13 @@ void WindowInit(Window_t *window) {
   if (window->Window == nullptr) {
     ERROR("Failed to create GLFW window\n");
     glfwTerminate();
-    return;
+    return 1;
   }
   glfwSetWindowUserPointer(window->Window, window);
+  return 0;
 }
 
-void ShutdownWindow(Window_t *window) {
+void window_shutdown(struct window *window) {
   if (!window) {
     return;
   }
@@ -42,11 +43,11 @@ void ShutdownWindow(Window_t *window) {
   glfwTerminate();
 }
 
-void GetFramebufferSize(Window_t *window, int *width, int *height) {
+void GetFramebufferSize(struct window *window, int *width, int *height) {
   glfwGetFramebufferSize(window->Window, width, height);
 }
 
-bool ShouldClose(Window_t *window) {
+bool ShouldClose(const struct window *window) {
   return glfwWindowShouldClose(window->Window);
 }
 

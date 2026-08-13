@@ -1,10 +1,10 @@
-#include "CCamera.h"
+#include "camera.h"
 
 static float lastX, lastY;
 static bool firstMouse = true;
 static bool capturingMouse = false;
 
-void CameraInit(Camera_t *camera, float fovDegrees, float aspectRatio,
+int camera_init(struct camera *camera, float fovDegrees, float aspectRatio,
                 float near, float far) {
   glm_vec3_copy((vec3){0.0f, 0.0f, 3.0f}, camera->Position);
   glm_vec3_copy((vec3){0.0f, 0.0f, -1.0f}, camera->Front);
@@ -17,22 +17,24 @@ void CameraInit(Camera_t *camera, float fovDegrees, float aspectRatio,
 
   glm_perspective(glm_rad(fovDegrees), aspectRatio, near, far,
                   camera->Projection);
-  CameraUpdateView(camera);
+  camera_updateview(camera);
+  return 0;
 }
 
-void CameraUpdateView(Camera_t *camera) {
+void camera_updateview(struct camera *camera) {
   vec3 center;
   glm_vec3_add(camera->Position, camera->Front, center);
   glm_lookat(camera->Position, center, camera->Up, camera->FieldOfView);
 }
 
-void CameraUpdateProjection(Camera_t *camera, float fovDegrees,
-                            float aspectRatio, float near, float far) {
+void camera_updateprojection(struct camera *camera, float fovDegrees,
+                             float aspectRatio, float near, float far) {
   glm_perspective(glm_rad(fovDegrees), aspectRatio, near, far,
                   camera->Projection);
 }
 
-void CameraUpdate(Camera_t *camera, Window_t *window, float deltaTime) {
+void camera_update(struct camera *camera, const struct window *window,
+                   float deltaTime) {
   if (glfwGetMouseButton(window->Window, GLFW_MOUSE_BUTTON_RIGHT) ==
       GLFW_PRESS) {
     if (!capturingMouse) {
@@ -115,5 +117,5 @@ void CameraUpdate(Camera_t *camera, Window_t *window, float deltaTime) {
     glm_vec3_add(camera->Position, temp, camera->Position);
   }
 
-  CameraUpdateView(camera);
+  camera_updateview(camera);
 }

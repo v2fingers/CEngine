@@ -54,7 +54,7 @@ links({
 })
 
 project("Runtime")
-kind("StaticLib")
+kind("ConsoleApp")
 language("C")
 cdialect("C23")
 SetupProject()

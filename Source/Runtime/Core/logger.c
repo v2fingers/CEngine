@@ -1,11 +1,11 @@
-#include "Logger.h"
+#include "logger.h"
 
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-void LogOutput(Severity_t severity, const char *msg, ...) {
+void logger_log(enum severity severity, const char *msg, ...) {
   char *mssage = nullptr;
   char buffer[8000];
   va_list list;
