@@ -3,6 +3,7 @@
 Intermediates/
 Binaries/
 Build/
+.chache/
 
 *.sln
 *.slnx

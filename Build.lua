@@ -1,7 +1,6 @@
-workspace("CEngine")
+workspace("Test-Engine")
 architecture("x64")
 configurations({ "Debug", "Release", "Dist" })
-startproject("Sandbox")
 toolset("clang")
 
 function SetupProject()
@@ -36,46 +35,8 @@ function SetupProject()
 	filter({})
 end
 
-project("Runtime")
-kind("StaticLib")
-language("C")
-cdialect("C23")
-SetupProject()
-
-files({
-	"Source/%{prj.name}/**.h",
-	"Source/%{prj.name}/**.c",
-})
-
-includedirs({
-	"Source/ThirdParty",
-})
-
-links({
-	"vulkan",
-	"glfw",
-})
 
 project("Sandbox")
-kind("ConsoleApp")
-language("C")
-cdialect("C23")
-SetupProject()
-
-files({
-	"Source/%{prj.name}/**.c",
-	"Source/%{prj.name}/**.h",
-})
-
-includedirs({
-	"Source/Runtime",
-})
-
-links({
-	"Runtime",
-})
-
-project("Tests")
 kind("ConsoleApp")
 language("C++")
 cppdialect("C++20")
@@ -88,9 +49,33 @@ files({
 
 includedirs({
 	"Source/ThirdParty",
+	"Source/%{prj.name}",
+})
+
+links({
+	"vulkan",
+	"glfw",
+	"CTest",
+})
+
+project("CTest")
+kind("StaticLib")
+language("C")
+cdialect("C23")
+SetupProject()
+
+files({
+	"Source/%{prj.name}/**.h",
+	"Source/%{prj.name}/**.c",
+})
+
+includedirs({
+	"Source/ThirdParty",
+	"Source/%{prj.name}",
 })
 
 links({
 	"vulkan",
 	"glfw",
 })
+
