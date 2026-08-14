@@ -1,5 +1,5 @@
-#include "vector.h"
-#include "memory.h"
+#include "Vector.h"
+#include "Memory.h"
 
 void vector_init(struct vector *vector, uint64_t element_size) {
   vector->data = nullptr;

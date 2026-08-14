@@ -1,4 +1,4 @@
-#include "camera.h"
+#include "Camera.h"
 
 static float lastX, lastY;
 static bool firstMouse = true;

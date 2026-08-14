@@ -1,6 +1,6 @@
-#include "window.h"
-#include "logger.h"
-#include "memory.h"
+#include "Window.h"
+#include "Utils/Logger.h"
+#include "Utils/Memory.h"
 #include <GLFW/glfw3.h>
 
 int window_init(struct window *window) {

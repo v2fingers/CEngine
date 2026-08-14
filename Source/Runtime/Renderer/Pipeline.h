@@ -1,0 +1,1 @@
+void graphicspipeline_create();

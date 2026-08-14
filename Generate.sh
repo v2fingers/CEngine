@@ -20,7 +20,7 @@ esac
 read -p "Compile solution now? " answer
 case "$answer" in
   y|Y)
-    ninja -v Sandbox ;;
+    ninja -v ;;
   n|N) echo "Skipping" ;;
 esac
 
