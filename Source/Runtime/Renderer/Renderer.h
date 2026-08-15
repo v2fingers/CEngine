@@ -9,4 +9,4 @@ struct renderer {
   int max_frames_in_flight;
 };
 
-int renderer_init(struct renderer *renderer);
+void renderer_init(struct renderer *renderer);

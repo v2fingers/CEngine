@@ -2,12 +2,6 @@
 #include "Utils/Optional.h"
 #include <vulkan/vulkan.h>
 
-#ifdef NDEBUG
-const bool enableValidationLayers = false;
-#else
-const bool enableValidationLayers = true;
-#endif
-
 struct queuefamilyindices {
   optional_type(uint32_t) graphics_family;
   optional_type(uint32_t) present_family;
@@ -15,6 +9,13 @@ struct queuefamilyindices {
 
 struct vulkancontext {
   VkInstance instance;
+  VkDebugUtilsMessengerEXT debug_messenger;
+
+  VkPhysicalDevice physical_device;
+  VkDevice device;
+  VkQueue graphics_queue;
+
+  bool enablevalidationlayers;
   struct queuefamilyindices queuefamilyindices;
 };
 
@@ -30,4 +31,5 @@ void syncobjects_create(struct vulkancontext *vkcontext);
 
 void vkcontext_cleanup(struct vulkancontext *vkcontext);
 
+bool validationlayers_checksupport();
 bool qfi_iscomplete(struct vulkancontext *vkcontext);

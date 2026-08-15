@@ -1,8 +1,13 @@
 #include "VulkanContext.h"
 #include "GLFW/glfw3.h"
 #include "Utils/Logger.h"
+#include "Utils/Vector.h"
 
 void instance_create(struct vulkancontext *vkcontext) {
+  if (vkcontext->enablevalidationlayers) {
+    ERROR("Vulkan validation layers requested, but not available!")
+  }
+
   VkApplicationInfo appInfo = {};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   appInfo.pApplicationName = "CEngine";
@@ -26,10 +31,21 @@ void instance_create(struct vulkancontext *vkcontext) {
 
   if (vkCreateInstance(&createInfo, nullptr, &vkcontext->instance) !=
       VK_SUCCESS) {
-    ERROR("failed to create instance!");
+    ERROR("Failed to create instance!");
   }
 }
 
 void vkcontext_cleanup(struct vulkancontext *vkcontext) {
   vkDestroyInstance(vkcontext->instance, nullptr);
+}
+
+bool validationlayers_checksupport() {
+  uint32_t layer_count;
+  vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
+
+  struct vector available_layers;
+  vector_init(&available_layers, sizeof(VkLayerProperties));
+  vector_resize(&available_layers, layer_count);
+  vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data);
+  return true;
 }

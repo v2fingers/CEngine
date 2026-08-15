@@ -21,7 +21,6 @@ function SetupProject()
 	symbols("On")
 
 	filter("configurations:Release")
-	defines({ "RELEASE" })
 	runtime("Release")
 	optimize("On")
 	symbols("On")
