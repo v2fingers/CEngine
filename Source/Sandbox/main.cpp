@@ -53,16 +53,16 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance,
   }
 }
 
-struct QueueFamilyIndices {
+struct QueueFamilyIndices { // VulkanContext.h
   std::optional<uint32_t> graphicsFamily;
   std::optional<uint32_t> presentFamily;
 
-  bool isComplete() {
+  bool isComplete() { // VulkanContext.h
     return graphicsFamily.has_value() && presentFamily.has_value();
   }
 };
 
-struct SwapChainSupportDetails {
+struct SwapChainSupportDetails { // Swapchain.h
   VkSurfaceCapabilitiesKHR capabilities;
   std::vector<VkSurfaceFormatKHR> formats;
   std::vector<VkPresentModeKHR> presentModes;
@@ -71,10 +71,10 @@ struct SwapChainSupportDetails {
 class HelloTriangleApplication {
 public:
   void run() {
-    initWindow();
-    initVulkan();
-    mainLoop();
-    cleanup();
+    initWindow(); // Engine.h
+    initVulkan(); // Renderer.h
+    mainLoop();   // Engine.h
+    cleanup();    // Engine.h
   }
 
 private:
@@ -129,19 +129,19 @@ private:
   }
 
   void initVulkan() {
-    createInstance();
-    setupDebugMessenger();
-    createSurface();
-    pickPhysicalDevice();
-    createLogicalDevice();
-    createSwapChain();
-    createImageViews();
-    createRenderPass();
-    createGraphicsPipeline();
-    createFramebuffers();
-    createCommandPool();
-    createCommandBuffers();
-    createSyncObjects();
+    createInstance();         // VulkanContext.h
+    setupDebugMessenger();    // VulkanContext.h
+    createSurface();          // VulkanContext.h
+    pickPhysicalDevice();     // VulkanContext.h
+    createLogicalDevice();    // VulkanContext.h
+    createSwapChain();        // Swapchain.h
+    createImageViews();       // Swaphcain.h
+    createRenderPass();       // Swapchain.h
+    createGraphicsPipeline(); // Pipeline.h
+    createFramebuffers();     // Swapchain.h
+    createCommandPool();      // VulkanContext.h
+    createCommandBuffers();   // VulkanContext.h
+    createSyncObjects();      // VulkanContext.h
   }
 
   void mainLoop() {
@@ -166,7 +166,7 @@ private:
   }
 
   void cleanup() {
-    cleanupSwapChain();
+    cleanupSwapChain(); // Swapchain.h
 
     vkDestroyPipeline(device, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
