@@ -47,9 +47,9 @@ void GetFramebufferSize(struct window *window, int *width, int *height) {
   glfwGetFramebufferSize(window->Window, width, height);
 }
 
-bool ShouldClose(const struct window *window) {
+bool window_shouldclose(const struct window *window) {
   return glfwWindowShouldClose(window->Window);
 }
 
-void PollEvents() { glfwPollEvents(); }
+void window_pollevents() { glfwPollEvents(); }
 void WaitEvents() { glfwWaitEvents(); }

@@ -13,8 +13,7 @@ struct engine {
   float start_time;
 };
 
-int engine_init(struct engine *engine);
+void engine_init(struct engine *engine);
 void engine_shutdown(struct engine *engine);
 
 void engine_run(struct engine *engine);
-void engine_update(struct engine *engine);

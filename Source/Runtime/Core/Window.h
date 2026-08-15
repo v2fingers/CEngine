@@ -13,7 +13,7 @@ int window_init(struct window *window);
 void window_shutdown(struct window *window);
 
 void GetFramebufferSize(struct window *window, int *width, int *height);
-bool ShouldClose(const struct window *window);
+bool window_shouldclose(const struct window *window);
 
-void PollEvents();
+void window_pollevents();
 void WaitEvents();
