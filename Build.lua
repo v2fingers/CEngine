@@ -35,8 +35,7 @@ cdialect("C23")
 SetupProject()
 
 files({
-	"Source/%{prj.name}/**.h",
-	"Source/%{prj.name}/**.cpp",
+	"Source/%{prj.name}/**.c",
 })
 
 includedirs({
