@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct mem_stats {
+struct Memory_Stats {
   uint64_t TotalAllocated;
 };
 
-static struct mem_stats stats;
+static struct Memory_Stats stats;
 
 void memory_init() { memory_zero(&stats, sizeof(stats)); }
 void memory_shutdown() {}
