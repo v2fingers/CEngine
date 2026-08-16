@@ -28,11 +28,10 @@ function SetupProject()
 	filter({})
 end
 
-
 project("Sandbox")
 kind("ConsoleApp")
-language("C++")
-cppdialect("C++20")
+language("C")
+cdialect("C23")
 SetupProject()
 
 files({
@@ -41,7 +40,7 @@ files({
 })
 
 includedirs({
-  "Source/Runtime",
+	"Source/Runtime",
 	"Source/ThirdParty",
 	"Source/%{prj.name}",
 })
@@ -53,7 +52,7 @@ links({
 })
 
 project("Runtime")
-kind("ConsoleApp")
+kind("StaticLib")
 language("C")
 cdialect("C23")
 SetupProject()
@@ -71,5 +70,5 @@ includedirs({
 links({
 	"vulkan",
 	"glfw",
+	"m",
 })
-
