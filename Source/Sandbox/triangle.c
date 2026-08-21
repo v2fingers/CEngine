@@ -5,9 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "Renderer/Utils.h"
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+/*
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
@@ -20,6 +23,7 @@ const char *const deviceExtensions[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 const int WIDTH = 800;
 const int HEIGHT = 600;
 const int MAX_FRAMES_IN_FLIGHT = 2;
+*/
 
 typedef struct {
   VkInstance instance;

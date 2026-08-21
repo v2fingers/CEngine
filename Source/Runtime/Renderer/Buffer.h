@@ -1,7 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
 
-struct Buffer {
+struct Buffers {
   VkFramebuffer *framebuffers;
   VkCommandPool commandPool;
   VkCommandBuffer *commandBuffers;
