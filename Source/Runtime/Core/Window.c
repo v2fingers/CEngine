@@ -3,7 +3,7 @@
 #include "Utils/Memory.h"
 #include <GLFW/glfw3.h>
 
-int window_init(struct Window *window) {
+int window_init(Window *window) {
   if (!window) {
     ERROR("Window pointer is null\n");
     return 1;
@@ -31,7 +31,7 @@ int window_init(struct Window *window) {
   return 0;
 }
 
-void window_shutdown(struct Window *window) {
+void window_shutdown(Window *window) {
   if (!window) {
     return;
   }
@@ -43,11 +43,11 @@ void window_shutdown(struct Window *window) {
   glfwTerminate();
 }
 
-void GetFramebufferSize(struct Window *window, int *width, int *height) {
+void GetFramebufferSize(Window *window, int *width, int *height) {
   glfwGetFramebufferSize(window->Window, width, height);
 }
 
-bool window_shouldclose(const struct Window *window) {
+bool window_shouldclose(const Window *window) {
   return glfwWindowShouldClose(window->Window);
 }
 

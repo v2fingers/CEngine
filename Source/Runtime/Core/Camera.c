@@ -4,8 +4,8 @@ static float lastX, lastY;
 static bool firstMouse = true;
 static bool capturingMouse = false;
 
-int camera_init(struct Camera *camera, float fovDegrees, float aspectRatio,
-                float near, float far) {
+int camera_init(Camera *camera, float fovDegrees, float aspectRatio, float near,
+                float far) {
   glm_vec3_copy((vec3){0.0f, 0.0f, 3.0f}, camera->Position);
   glm_vec3_copy((vec3){0.0f, 0.0f, -1.0f}, camera->Front);
   glm_vec3_copy((vec3){0.0f, 1.0f, 0.0f}, camera->WorldUp);
@@ -21,20 +21,19 @@ int camera_init(struct Camera *camera, float fovDegrees, float aspectRatio,
   return 0;
 }
 
-void camera_updateview(struct Camera *camera) {
+void camera_updateview(Camera *camera) {
   vec3 center;
   glm_vec3_add(camera->Position, camera->Front, center);
   glm_lookat(camera->Position, center, camera->Up, camera->FieldOfView);
 }
 
-void camera_updateprojection(struct Camera *camera, float fovDegrees,
+void camera_updateprojection(Camera *camera, float fovDegrees,
                              float aspectRatio, float near, float far) {
   glm_perspective(glm_rad(fovDegrees), aspectRatio, near, far,
                   camera->Projection);
 }
 
-void camera_update(struct Camera *camera, const struct Window *window,
-                   float deltaTime) {
+void camera_update(Camera *camera, const Window *window, float deltaTime) {
   if (glfwGetMouseButton(window->Window, GLFW_MOUSE_BUTTON_RIGHT) ==
       GLFW_PRESS) {
     if (!capturingMouse) {

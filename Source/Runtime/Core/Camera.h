@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <cglm/cglm.h>
 
-struct Camera {
+typedef struct {
   vec3 Position;
   vec3 Front;
   vec3 Up;
@@ -18,12 +18,11 @@ struct Camera {
 
   mat4 FieldOfView;
   mat4 Projection;
-};
+} Camera;
 
-int camera_init(struct Camera *camera, float fovDegrees, float aspectRatio,
-                float near, float far);
-void camera_update(struct Camera *camera, const struct Window *window,
-                   float deltaTime);
-void camera_updateview(struct Camera *camera);
-void camera_updateprojection(struct Camera *camera, float fovDegrees,
+int camera_init(Camera *camera, float fovDegrees, float aspectRatio, float near,
+                float far);
+void camera_update(Camera *camera, const Window *window, float deltaTime);
+void camera_updateview(Camera *camera);
+void camera_updateprojection(Camera *camera, float fovDegrees,
                              float aspectRatio, float near, float far);

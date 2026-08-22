@@ -1,8 +1,8 @@
 #pragma once
 #include <vulkan/vulkan.h>
 
-struct Pipeline {
+typedef struct {
   VkRenderPass renderPass;
   VkPipelineLayout pipelineLayout;
   VkPipeline pipeline;
-};
+} Pipeline;

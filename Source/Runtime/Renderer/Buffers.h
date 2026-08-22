@@ -1,10 +1,10 @@
 #pragma once
 #include <vulkan/vulkan.h>
 
-struct Buffers {
+typedef struct {
   VkFramebuffer *framebuffers;
   VkCommandPool commandPool;
   VkCommandBuffer *commandBuffers;
   VkSemaphore imageAvailableSemaphore;
   VkSemaphore renderFinishedSemaphore;
-};
+} Buffers;

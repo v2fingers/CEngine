@@ -2,17 +2,16 @@
 
 #include "Core/Camera.h"
 #include "Core/Window.h"
-// #include "Renderer/Renderer.h"
+#include "Renderer/Renderer.h"
 
-struct Engine {
-  struct Window window;
-  struct Camera camera;
-  // struct renderer renderer;
+typedef struct {
+  Window window;
+  Camera camera;
 
   float delta_time;
   float start_time;
-};
+} Engine;
 
-void engine_init(struct Engine *engine);
-void engine_shutdown(struct Engine *engine);
-void engine_run(struct Engine *engine);
+void engine_init(Engine *engine);
+void engine_shutdown(Engine *engine);
+void engine_run(Engine *engine);
