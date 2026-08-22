@@ -9,3 +9,6 @@ typedef struct {
   VkImage *images;
   VkImageView *imageViews;
 } SwapchainAndViews;
+
+void createRenderPass(VkDevice device, VkFormat imageFormat,
+                      VkRenderPass *renderPass);

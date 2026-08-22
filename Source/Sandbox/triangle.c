@@ -5,64 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "Renderer/Renderer.h"
 #include "Renderer/Utils.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-
-/*
-#ifdef NDEBUG
-const bool enableValidationLayers = false;
-#else
-const bool enableValidationLayers = true;
-#endif
-const uint32_t validationLayersCount = 1;
-const char *const validationLayers[] = {"VK_LAYER_KHRONOS_validation"};
-const uint32_t deviceExtensionsCount = 1;
-const char *const deviceExtensions[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-const int WIDTH = 800;
-const int HEIGHT = 600;
-const int MAX_FRAMES_IN_FLIGHT = 2;
-*/
-
-typedef struct {
-  VkInstance instance;
-  VkDevice device;
-  VkPhysicalDevice physicalDevice;
-  VkSurfaceKHR surface;
-  VkQueue queue;
-  uint32_t queueIndex;
-} SurfaceAndDevice;
-
-typedef struct {
-  VkSwapchainKHR swapchain;
-  VkExtent2D imageExtent;
-  VkFormat format;
-  uint32_t imageCount;
-  VkImage *images;
-  VkImageView *imageViews;
-} SwapchainAndViews;
-
-typedef struct {
-  VkRenderPass renderPass;
-  VkPipelineLayout pipelineLayout;
-  VkPipeline pipeline;
-} Pipeline;
-
-typedef struct {
-  VkFramebuffer *framebuffers;
-  VkCommandPool commandPool;
-  VkCommandBuffer *commandBuffers;
-  VkSemaphore imageAvailableSemaphore;
-  VkSemaphore renderFinishedSemaphore;
-} Buffers;
-
-typedef struct {
-  SurfaceAndDevice *surfaceAndDevice;
-  SwapchainAndViews *swapchainAndViews;
-  Pipeline *pipeline;
-  Buffers *buffers;
-} VulkanStuff;
 
 static void error_callback(int error, const char *description) {
   fprintf(stderr, "Error: %s\n", description);
@@ -76,7 +23,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action,
     glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-size_t readShaderFromFile(const char filename[], uint32_t **shaderContent) {
+/* size_t readShaderFromFile(const char filename[], uint32_t **shaderContent) {
   FILE *fp;
   size_t filesize;
   char *buffer;
@@ -100,7 +47,7 @@ size_t readShaderFromFile(const char filename[], uint32_t **shaderContent) {
   fclose(fp);
   *shaderContent = (uint32_t *)buffer;
   return filesize + offset;
-}
+} */
 
 void initWindow(GLFWwindow **window) {
   glfwSetErrorCallback(error_callback);
@@ -519,7 +466,7 @@ void destroyImageViews(VkDevice device, SwapchainAndViews *swapchainAndViews) {
   free(swapchainAndViews->imageViews);
 }
 
-VkShaderModule createShaderModule(VkDevice device,
+/* VkShaderModule createShaderModule(VkDevice device,
                                   const uint32_t *shaderContent,
                                   size_t shaderSize) {
   VkShaderModule shaderModule;
@@ -534,9 +481,9 @@ VkShaderModule createShaderModule(VkDevice device,
     fprintf(stderr, "ERROR Vulkan: failed to create shader module");
   }
   return shaderModule;
-}
+} */
 
-void createGraphicsPipeline(VkDevice device, VkExtent2D *imageExtent,
+/* void createGraphicsPipeline(VkDevice device, VkExtent2D *imageExtent,
                             Pipeline *pipeline) {
   uint32_t *vertexShader;
   size_t vertexShaderSize;
@@ -688,9 +635,9 @@ void createGraphicsPipeline(VkDevice device, VkExtent2D *imageExtent,
   vkDestroyShaderModule(device, fragmentShaderModule, NULL);
   free(vertexShader);
   free(fragmentShader);
-}
+} */
 
-void createRenderPass(VkDevice device, VkFormat imageFormat,
+/* void createRenderPass(VkDevice device, VkFormat imageFormat,
                       VkRenderPass *renderPass) {
   VkAttachmentDescription colorAttachment = {};
   colorAttachment.format = imageFormat;
@@ -730,7 +677,7 @@ void createRenderPass(VkDevice device, VkFormat imageFormat,
   } else {
     printf("INFO Vulkan: created render pass\n");
   }
-}
+} */
 
 void createFramebuffers(VkDevice device, SwapchainAndViews *swapchainAndViews,
                         Pipeline *pipeline, Buffers *buffers) {
