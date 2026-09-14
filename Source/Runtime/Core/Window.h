@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "Defines.h"
 
-typedef struct {
+typedef struct window {
   GLFWwindow *Window;
   i32 Width;
   i32 Height;

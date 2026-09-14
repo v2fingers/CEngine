@@ -1,51 +1,53 @@
 #include "DArray.h"
 #include "Core/Logger.h"
+#include "Core/Memory/Memory.h"
 #include <string.h>
 
 // Initialize the array
-void darray_init(DArray *array, i32 initialCapacity, u64 elementSize) {
+void darray_init(DArray *darray, i32 initialCapacity, u64 elementSize) {
 
-  array->data = malloc(initialCapacity * elementSize);
-  array->size = 0;
-  array->capacity = initialCapacity;
-  array->element_size = elementSize;
+  darray->data = mem_alloc(initialCapacity * elementSize);
+  darray->size = 0;
+  darray->capacity = initialCapacity;
+  darray->element_size = elementSize;
 }
 
 // Add an element, growing the array if necessary
-void darray_insert(DArray *array, void *element) {
-  if (array->size == array->capacity) {
-    array->capacity *= 2;
+void darray_insert(DArray *darray, void *element) {
+  if (darray->size == darray->capacity) {
+    i32 old_cap = darray->capacity;
+    darray->capacity *= 2;
 
-    void *temp = realloc(array->data, array->capacity * array->element_size);
+    void *temp = mem_realloc(darray->data, old_cap, darray->capacity * darray->element_size);
 
     if (temp == NULL) {
       LOG_ERROR("Memory reallocation failed!");
       return;
     }
 
-    array->data = temp;
+    darray->data = temp;
   }
 
   // Find the address of the next element
-  void *destination = (char *)array->data + array->size * array->element_size;
+  void *destination = (char *)darray->data + darray->size * darray->element_size;
 
   // Copy the element into the array
-  memcpy(destination, element, array->element_size);
+  mem_copy(destination, element, darray->element_size);
 
-  array->size++;
+  darray->size++;
 }
 
 // Get an element by index
-void *darray_get(DArray *array, i32 index) {
-  return (char *)array->data + index * array->element_size;
+void *darray_get(DArray *darray, i32 index) {
+  return (char *)darray->data + index * darray->element_size;
 }
 
 // Clean up memory
-void darray_free(DArray *array) {
-  free(array->data);
+void darray_free(DArray *darray) {
+  mem_free(darray->data, sizeof(darray->data));
 
-  array->data = NULL;
-  array->size = 0;
-  array->capacity = 0;
-  array->element_size = 0;
+  darray->data = NULL;
+  darray->size = 0;
+  darray->capacity = 0;
+  darray->element_size = 0;
 }

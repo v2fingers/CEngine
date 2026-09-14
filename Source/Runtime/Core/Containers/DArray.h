@@ -1,8 +1,7 @@
 #pragma once
-#include <stdlib.h>
 #include "Defines.h"
 
-typedef struct {
+typedef struct dynamic_array {
   void *data;
   i32 size;
   i32 capacity;

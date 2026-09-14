@@ -2,7 +2,7 @@
 #include "Core/Window.h"
 #include "Renderer/VulkanContext.h"
 
-typedef struct {
+typedef struct renderer {
   VulkanContext vkcontext;
 } Renderer;
 

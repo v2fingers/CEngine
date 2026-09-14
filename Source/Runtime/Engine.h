@@ -4,7 +4,7 @@
 #include "Core/Window.h"
 #include "Renderer/Renderer.h"
 
-typedef struct {
+typedef struct engine {
   Window window;
   Camera camera;
   Renderer renderer;

@@ -3,7 +3,7 @@
 #include "Window.h"
 #include <cglm/cglm.h>
 
-typedef struct {
+typedef struct camera {
   vec3 Position;
   vec3 Front;
   vec3 Up;
