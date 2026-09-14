@@ -1,7 +1,9 @@
 #include "Engine.h"
+#include "Core/Memory/Memory.h"
 #include "Renderer/Renderer.h"
 
 void engine_init(Engine *engine) {
+  mem_init();
   engine->delta_time = 0.0f;
   engine->start_time = 0.0f;
 
@@ -10,6 +12,7 @@ void engine_init(Engine *engine) {
   engine->window.Title = "TestEngine";
   win_init(&engine->window);
   renderer_init(&engine->renderer, &engine->window);
+  mem_shutdown();
 }
 
 void engine_run(Engine *engine) {
