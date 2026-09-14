@@ -3,7 +3,7 @@
 #include "Defines.h"
 #include <vulkan/vulkan.h>
 
-typedef struct {
+typedef struct vulkan_context {
   VkInstance instance;
   const char **layers;
   const char **exts;
@@ -18,7 +18,7 @@ typedef struct {
   VkQueue graphics_queue, present_queue;
 } VulkanContext;
 
-void _create_instance(VulkanContext *vkcontext);
-void _create_surface(VulkanContext *vkcontext, Window *window);
-void _pick_phys_dev(VulkanContext *vkcontext);
-void _create_logical_dev(VulkanContext *vkcontext);
+void create_instance(VulkanContext *vkcontext);
+void create_surface(VulkanContext *vkcontext, Window *window);
+void pick_phys_dev(VulkanContext *vkcontext);
+void create_logical_dev(VulkanContext *vkcontext);

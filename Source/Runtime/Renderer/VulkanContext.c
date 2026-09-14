@@ -1,7 +1,7 @@
 #include "VulkanContext.h"
 #include "Core/Logger.h"
 
-void _create_instance(VulkanContext *vkcontext) {
+void create_instance(VulkanContext *vkcontext) {
   // Number of extentions and the data:
   u32 n_exts;
   const char **exts = win_get_instance_ext(&n_exts);
@@ -36,7 +36,7 @@ void _create_instance(VulkanContext *vkcontext) {
   LOG_INFO("Created Vulkan instance");
 }
 
-void _create_surface(VulkanContext *vkcontext, Window *window) { // GLFW create vulkan surface
+void create_surface(VulkanContext *vkcontext, Window *window) { // GLFW create vulkan surface
   glfwCreateWindowSurface(vkcontext->instance, window->Window, NULL, &vkcontext->surface);
   // If not valid then throw error
   if (!vkcontext->surface) {
@@ -45,7 +45,7 @@ void _create_surface(VulkanContext *vkcontext, Window *window) { // GLFW create 
   LOG_INFO("Created Vulkan surface");
 }
 
-void _pick_phys_dev(VulkanContext *vkcontext) {
+void pick_phys_dev(VulkanContext *vkcontext) {
   // Get number of physical devices
   u32 n_phys_dev;
   vkEnumeratePhysicalDevices(vkcontext->instance, &n_phys_dev, NULL);
@@ -99,7 +99,7 @@ void _pick_phys_dev(VulkanContext *vkcontext) {
   return;
 }
 
-void _create_logical_dev(VulkanContext *vkcontext) {
+void create_logical_dev(VulkanContext *vkcontext) {
   // Two queue create info, one for each queue (graphics & present)
   VkDeviceQueueCreateInfo queue_infos[2];
   f32 priority = 1.0f;
