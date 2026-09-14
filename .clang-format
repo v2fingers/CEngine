@@ -1,0 +1,6 @@
+IndentWidth: 2
+UseTab: Never
+SortIncludes: Never
+AllowShortFunctionsOnASingleLine: None
+AlignConsecutiveDeclarations: None
+ColumnLimit: 125
