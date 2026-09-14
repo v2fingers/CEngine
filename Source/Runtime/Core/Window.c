@@ -53,9 +53,9 @@ b8 win_shouldclose(const Window *window) {
   return glfwWindowShouldClose(window->Window);
 }
 
-void win_poll_events() {
+void win_poll_events(void) {
   glfwPollEvents();
 }
-void win_wait_events() {
+void win_wait_events(void) {
   glfwWaitEvents();
 }

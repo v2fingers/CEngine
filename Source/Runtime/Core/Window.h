@@ -17,5 +17,5 @@ const char **win_get_instance_ext(u32 *count);
 void win_get_framebuffer_size(Window *window, i32 *width, i32 *height);
 b8 win_shouldclose(const Window *window);
 
-void win_poll_events();
-void win_wait_events();
+void win_poll_events(void);
+void win_wait_events(void);

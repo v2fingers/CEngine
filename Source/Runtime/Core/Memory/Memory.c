@@ -10,10 +10,10 @@ struct Memory_Stats {
 
 static struct Memory_Stats stats;
 
-void mem_init() {
+void mem_init(void) {
   mem_zero(&stats, sizeof(stats));
 }
-void mem_shutdown() {
+void mem_shutdown(void) {
 }
 
 void mem_free(void *chunk, u64 size) {
@@ -53,7 +53,7 @@ void *mem_set(void *dest, i32 value, u64 size) {
   return memset(dest, value, size);
 }
 
-void mem_print_usage() {
+void mem_print_usage(void) {
   f64 value = (double)stats.total_allocated;
   const char *unit = "B";
 

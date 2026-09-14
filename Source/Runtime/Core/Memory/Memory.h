@@ -2,8 +2,8 @@
 #include "Defines.h"
 #include <stdint.h>
 
-void mem_init();
-void mem_shutdown();
+void mem_init(void);
+void mem_shutdown(void);
 
 void mem_free(void *chunk, u64 size);
 void *mem_alloc(u64);
@@ -12,4 +12,4 @@ void *mem_zero(void *chunk, u64 size);
 void *mem_realloc(void *chunk, u64 size, u64 newsize);
 void *mem_set(void *dest, i32 value, u64 size);
 
-void mem_print_usage();
+void mem_print_usage(void);
