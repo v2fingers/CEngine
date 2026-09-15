@@ -1,9 +1,12 @@
 #pragma once
 #include "Core/Window.h"
 #include "Defines.h"
+#include "RenderTypes.h"
+#include "Swapchain.h"
+
 #include <vulkan/vulkan.h>
 
-typedef struct vulkan_context {
+struct vulkan_context {
   VkInstance instance;
   const char **layers;
   const char **exts;
@@ -16,7 +19,8 @@ typedef struct vulkan_context {
   i32 present_queue_family_index;
 
   VkQueue graphics_queue, present_queue;
-} VulkanContext;
+  Swapchain swapchain;
+};
 
 void create_instance(VulkanContext *vkcontext);
 void create_surface(VulkanContext *vkcontext, Window *window);
