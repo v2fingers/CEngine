@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Renderer/Swapchain.h"
 #include "Renderer/VulkanContext.h"
 
 void renderer_init(Renderer *renderer, Window *window) {
@@ -10,6 +11,8 @@ void renderer_init(Renderer *renderer, Window *window) {
 }
 
 void renderer_shutdown(Renderer *renderer) {
+  destroy_swapchain(&renderer->vkcontext, &renderer->vkcontext.swapchain);
+  destroy_context(&renderer->vkcontext);
 }
 
 void renderer_drawframe(Renderer *renderer) {

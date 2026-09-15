@@ -2,6 +2,26 @@
 #include "VulkanContext.h"
 #include "Core/Memory/Memory.h"
 #include "Core/Logger.h"
+#include <stdlib.h>
+
+void destroy_swapchain(VulkanContext *vkcontext, Swapchain *swapchain) {
+  if (!vkcontext || !swapchain) {
+    return;
+  }
+  for (u32 i = 0; i < swapchain->n_imgs; i++) {
+    if (swapchain->images_views[i] != VK_NULL_HANDLE) {
+      vkDestroyImageView(vkcontext->logical_dev, swapchain->images_views[i], NULL);
+    }
+  }
+  vkDestroySwapchainKHR(vkcontext->logical_dev, swapchain->swapchain_handle, NULL);
+
+  swapchain->swapchain_handle = VK_NULL_HANDLE;
+  free(swapchain->images);
+  free(swapchain->images_views);
+  swapchain->images = NULL;
+  swapchain->images_views = NULL;
+  swapchain->n_imgs = 0;
+}
 
 void get_swapchain_info(VulkanContext *vkcontext, SwapchainInfo *o_info) {
   // https://docs.vulkan.org/refpages/latest/refpages/source/VkSurfaceCapabilitiesKHR.html
@@ -14,7 +34,7 @@ void get_swapchain_info(VulkanContext *vkcontext, SwapchainInfo *o_info) {
 
   // What are and how many ways can images be presented to surface
   vkGetPhysicalDeviceSurfacePresentModesKHR(vkcontext->phys_dev, vkcontext->surface, &o_info->n_present_modes, NULL);
-  o_info->surf_present_modes = mem_calloc(o_info->n_fmts, sizeof(*o_info->surf_present_modes));
+  o_info->surf_present_modes = mem_calloc(o_info->n_present_modes, sizeof(*o_info->surf_present_modes));
   vkGetPhysicalDeviceSurfacePresentModesKHR(vkcontext->phys_dev, vkcontext->surface, &o_info->n_present_modes,
                                             o_info->surf_present_modes);
 }
@@ -103,6 +123,10 @@ void create_swapchain(VulkanContext *vkcontext, Swapchain *o_swapchain, u32 w, u
     // Tell vulkan that they are seperate
     swapchain_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
   }
+  free(info.surf_fmts);
+  free(info.surf_present_modes);
+  info.surf_fmts = NULL;
+  info.surf_present_modes = NULL;
 
   // Create the swapchain
   if (vkCreateSwapchainKHR(vkcontext->logical_dev, &swapchain_info, NULL, &o_swapchain->swapchain_handle) != VK_SUCCESS) {
@@ -148,5 +172,6 @@ void create_swapchain(VulkanContext *vkcontext, Swapchain *o_swapchain, u32 w, u
       LOG_ERROR("Failed to create Vulkan swapchain");
     }
   }
+
   LOG_INFO("Created Vulkan swapchain");
 }

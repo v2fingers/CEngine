@@ -23,6 +23,7 @@ struct vulkan_context {
 };
 
 void create_instance(VulkanContext *vkcontext);
+void destroy_context(VulkanContext *vkcontext);
 void create_surface(VulkanContext *vkcontext, Window *window);
 void pick_phys_dev(VulkanContext *vkcontext);
 void create_logical_dev(VulkanContext *vkcontext);

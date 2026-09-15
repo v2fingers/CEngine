@@ -1,6 +1,24 @@
 #include "VulkanContext.h"
 #include "Core/Logger.h"
 
+void destroy_context(VulkanContext *vkcontext) {
+  if (!vkcontext) {
+    return;
+  }
+  if (vkcontext->logical_dev != VK_NULL_HANDLE) {
+    vkDestroyDevice(vkcontext->logical_dev, NULL);
+    vkcontext->logical_dev = VK_NULL_HANDLE;
+  }
+  if (vkcontext->surface != VK_NULL_HANDLE) {
+    vkDestroySurfaceKHR(vkcontext->instance, vkcontext->surface, NULL);
+    vkcontext->surface = VK_NULL_HANDLE;
+  }
+  if (vkcontext->instance != VK_NULL_HANDLE) {
+    vkDestroyInstance(vkcontext->instance, NULL);
+    vkcontext->instance = VK_NULL_HANDLE;
+  }
+}
+
 void create_instance(VulkanContext *vkcontext) {
   // Number of extentions and the data:
   u32 n_exts;

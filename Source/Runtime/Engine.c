@@ -26,7 +26,7 @@ void engine_run(Engine *engine) {
 }
 
 void engine_shutdown(Engine *engine) {
-  win_shutdown(&engine->window);
   renderer_shutdown(&engine->renderer);
+  win_shutdown(&engine->window);
   mem_shutdown();
 }
