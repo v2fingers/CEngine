@@ -44,5 +44,5 @@ STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 #define TRUE 1
 #define FALSE 0
 
-#define MAX(a, b) a > b ? a : b
-#define MIN(a, b) a < b ? a : b
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
