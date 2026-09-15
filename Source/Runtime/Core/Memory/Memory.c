@@ -58,6 +58,7 @@ void *mem_calloc(u64 count, u64 size) {
   }
 
   stats.total_allocated += total;
+  LOG_INFO("Memory Allocated: %p (%lu bytes)", chunk, size);
   mem_zero(chunk, total);
 
   return chunk;
