@@ -9,8 +9,6 @@ newoption {
 }
 
 function SetupProject()
-	language("C")
-	cdialect("C99")
 	location("Build")
 	targetdir("%{wks.location}/Build/Binaries/%{cfg.buildcfg}")
 	objdir("%{wks.location}/Build/Intermediates/%{prj.name}/%{cfg.buildcfg}")
@@ -48,6 +46,9 @@ end
 project("Testbed")
 kind("ConsoleApp")
 SetupProject()
+language("C")
+cdialect("C99")
+
 
 files({
 	"Source/%{prj.name}/**.c",
@@ -68,6 +69,9 @@ links({
 project("Runtime")
 kind("StaticLib")
 SetupProject()
+language("C")
+cdialect("C99")
+
 
 files({
 	"Source/%{prj.name}/**.h",
@@ -83,4 +87,25 @@ links({
 	"vulkan",
 	"glfw",
 	"m",
+	"VMA",
+})
+
+project("VMA")
+kind("StaticLib")
+SetupProject()
+language("C++")
+cppdialect("C++23")
+
+files({
+	"Source/ThirdParty/%{prj.name}/vma.cpp",
+	"Source/ThirdParty/%{prj.name}/vk_mem_alloc.h",
+})
+
+includedirs({
+	"Source/ThirdParty/%{prj.name}",
+	"Source/ThirdParty"
+})
+
+links({
+	"vulkan"
 })

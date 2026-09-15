@@ -2,9 +2,8 @@
 set -e
 
 echo "Building everything..."
-./Source/Runtime/Build.sh
-./Source/Testbed/Build.sh
-	
+ninja -v
+
 read -p "Compile shaders? " answer
 case "$answer" in
   y|Y)
