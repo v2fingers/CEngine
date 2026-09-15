@@ -49,6 +49,20 @@ void *mem_realloc(void *chunk, u64 size, u64 newsize) {
   return realloc(chunk, newsize);
 }
 
+void *mem_calloc(u64 count, u64 size) {
+  u64 total = count * size;
+
+  void *chunk = malloc(total);
+  if (!chunk) {
+    return NULL;
+  }
+
+  stats.total_allocated += total;
+  mem_zero(chunk, total);
+
+  return chunk;
+}
+
 void *mem_set(void *dest, i32 value, u64 size) {
   return memset(dest, value, size);
 }
