@@ -12,7 +12,6 @@ void engine_init(Engine *engine) {
   engine->window.Title = "TestEngine";
   win_init(&engine->window);
   renderer_init(&engine->renderer, &engine->window);
-  mem_shutdown();
 }
 
 void engine_run(Engine *engine) {
@@ -29,4 +28,5 @@ void engine_run(Engine *engine) {
 void engine_shutdown(Engine *engine) {
   win_shutdown(&engine->window);
   renderer_shutdown(&engine->renderer);
+  mem_shutdown();
 }
