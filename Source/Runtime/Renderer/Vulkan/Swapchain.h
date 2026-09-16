@@ -1,6 +1,6 @@
 #pragma once
 #include "Defines.h"
-#include "RenderTypes.h"
+#include "VulkanTypes.h"
 
 void create_swapchain(VulkanContext *vkcontext, Swapchain *swapchain, u32 w, u32 h);
 void destroy_swapchain(VulkanContext *vkcontext, Swapchain *swapchain);

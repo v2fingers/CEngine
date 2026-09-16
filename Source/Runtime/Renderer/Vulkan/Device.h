@@ -1,6 +1,6 @@
 #pragma once
 #include "Defines.h"
-#include "RenderTypes.h"
+#include "VulkanTypes.h"
 
 void destroy_device(VulkanContext *vkcontext);
 void pick_phys_dev(VulkanContext *vkcontext);

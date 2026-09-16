@@ -1,10 +1,10 @@
 #include "Renderer.h"
-#include "Renderer/Pipeline.h"
-#include "Renderer/Swapchain.h"
-#include "Renderer/Device.h"
-#include "Renderer/Framebuffer.h"
-#include "Renderer/Instance.h"
-#include "Renderer/Renderpass.h"
+#include "Vulkan/Pipeline.h"
+#include "Vulkan/Swapchain.h"
+#include "Vulkan/Device.h"
+#include "Vulkan/Framebuffer.h"
+#include "Vulkan/Instance.h"
+#include "Vulkan/Renderpass.h"
 
 void renderer_init(Renderer *renderer, Window *window) {
   create_instance(&renderer->vkcontext);

@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/Window.h"
 #include "Defines.h"
-#include "RenderTypes.h"
+#include "VulkanTypes.h"
 
 void create_instance(VulkanContext *vkcontext);
 void destroy_instance(VulkanContext *vkcontext);

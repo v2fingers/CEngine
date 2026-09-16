@@ -1,6 +1,6 @@
 #pragma once
 #include "Defines.h"
-#include "RenderTypes.h"
+#include "VulkanTypes.h"
 
 void create_pipeline(VulkanContext *vkcontext, GraphicsPipeline *gpu_pipeline);
 void destroy_pipeline(VulkanContext *vkcontext, GraphicsPipeline *gpu_pipeline);

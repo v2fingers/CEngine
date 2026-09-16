@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/Window.h"
-#include "RenderTypes.h"
+#include "Vulkan/VulkanTypes.h"
 
 typedef struct renderer {
   VulkanContext vkcontext;
