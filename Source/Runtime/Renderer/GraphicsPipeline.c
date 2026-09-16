@@ -207,17 +207,13 @@ void destroy_graphics_pipeline(VulkanContext *vkcontext, GraphicsPipeline *gpu_p
 
 static void read_shader(const char *filename, ShaderData *shader) {
   FILE *pFile;
-
   pFile = fopen(filename, "rb");
   if (pFile == NULL) {
     LOG_ERROR("Failed to open %s", filename);
     return;
   }
-
   fseek(pFile, 0L, SEEK_END);
-
   shader->size = ftell(pFile);
-
   fseek(pFile, 0L, SEEK_SET);
 
   LOG_INFO("%s size = %ld", filename, shader->size);
@@ -225,6 +221,16 @@ static void read_shader(const char *filename, ShaderData *shader) {
   shader->data = (char *)mem_alloc(sizeof(char) * shader->size);
   size_t readCount = fread(shader->data, shader->size, sizeof(char), pFile);
   LOG_INFO("ReadCount: %ld", readCount);
+
+  // Check if the SPIR-V magic number is valid
+  if (shader->size >= 4) {
+    uint32_t magic = *(uint32_t *)shader->data;
+    if (magic != 0x07230203) {
+      LOG_ERROR("File %s is not SPIR-V binary", filename);
+    }
+  } else {
+    LOG_ERROR("File %s is not SPIR-V binary", filename);
+  }
 
   fclose(pFile);
 }
