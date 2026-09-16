@@ -25,7 +25,8 @@ typedef struct swapchain_info {
 
 void create_swapchain(VulkanContext *vkcontext, Swapchain *swapchain, u32 w, u32 h);
 void destroy_swapchain(VulkanContext *vkcontext, Swapchain *swapchain);
-void get_swapchain_info(VulkanContext *vkcontext, SwapchainInfo *o_info);
-VkSurfaceFormatKHR get_swapchain_format(VkSurfaceFormatKHR *fmts, u32 n_fmts);
-VkPresentModeKHR get_swapchain_present_mode(VkPresentModeKHR *modes, u32 n_modes);
-VkExtent2D get_swapchain_extent(VkSurfaceCapabilitiesKHR *caps, u32 w, u32 h);
+
+static void get_swapchain_info(VulkanContext *vkcontext, SwapchainInfo *o_info);
+static VkSurfaceFormatKHR get_swapchain_format(VkSurfaceFormatKHR *fmts, u32 n_fmts);
+static VkPresentModeKHR get_swapchain_present_mode(VkPresentModeKHR *modes, u32 n_modes);
+static VkExtent2D get_swapchain_extent(VkSurfaceCapabilitiesKHR *caps, u32 w, u32 h);

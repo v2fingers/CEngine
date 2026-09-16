@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <vulkan/vulkan_core.h>
 
-VkShaderModule create_shader_module(VulkanContext *vkcontext, ShaderData *shader) {
+static VkShaderModule create_shader_module(VulkanContext *vkcontext, ShaderData *shader) {
 
   VkShaderModuleCreateInfo create_info = {
       .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
@@ -144,7 +144,7 @@ void destroy_graphics_pipeline(VulkanContext *vkcontext, GraphicsPipeline *gpu_p
   vkDestroyPipelineLayout(vkcontext->logical_dev, gpu_pipeline->pipeline_layout, NULL);
 }
 
-void read_shader(const char *filename, ShaderData *shader) {
+static void read_shader(const char *filename, ShaderData *shader) {
   FILE *pFile;
 
   pFile = fopen(filename, "rb");

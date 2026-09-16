@@ -23,7 +23,7 @@ void destroy_swapchain(VulkanContext *vkcontext, Swapchain *swapchain) {
   swapchain->n_imgs = 0;
 }
 
-void get_swapchain_info(VulkanContext *vkcontext, SwapchainInfo *o_info) {
+static void get_swapchain_info(VulkanContext *vkcontext, SwapchainInfo *o_info) {
   // https://docs.vulkan.org/refpages/latest/refpages/source/VkSurfaceCapabilitiesKHR.html
   // Limitations/capabilities of GPU when presenting to this surface
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vkcontext->phys_dev, vkcontext->surface, &o_info->surf_caps);
@@ -40,7 +40,7 @@ void get_swapchain_info(VulkanContext *vkcontext, SwapchainInfo *o_info) {
 }
 
 // Go through supported formats and select best
-VkSurfaceFormatKHR get_swapchain_format(VkSurfaceFormatKHR *fmts, u32 n_fmts) {
+static VkSurfaceFormatKHR get_swapchain_format(VkSurfaceFormatKHR *fmts, u32 n_fmts) {
   // Loop through each format
   for (u32 i = 0; i < n_fmts; i++) {
     if (fmts[i].format == VK_FORMAT_B8G8R8A8_SRGB && fmts[i].colorSpace == VK_COLORSPACE_SRGB_NONLINEAR_KHR) {
@@ -51,7 +51,7 @@ VkSurfaceFormatKHR get_swapchain_format(VkSurfaceFormatKHR *fmts, u32 n_fmts) {
 }
 
 // If gpu supports MAILBOX to the surface then use it
-VkPresentModeKHR get_swapchain_present_mode(VkPresentModeKHR *modes, u32 n_modes) {
+static VkPresentModeKHR get_swapchain_present_mode(VkPresentModeKHR *modes, u32 n_modes) {
   for (u32 i = 0; i < n_modes; i++) {
     if (modes[i] == VK_PRESENT_MODE_MAILBOX_KHR) {
       return modes[i];
@@ -61,7 +61,7 @@ VkPresentModeKHR get_swapchain_present_mode(VkPresentModeKHR *modes, u32 n_modes
 }
 
 // Clamp width and height to between max and min supported width and height of swapchain
-VkExtent2D get_swapchain_extent(VkSurfaceCapabilitiesKHR *caps, u32 w, u32 h) {
+static VkExtent2D get_swapchain_extent(VkSurfaceCapabilitiesKHR *caps, u32 w, u32 h) {
   VkExtent2D extent = (VkExtent2D){
       .width = w,
       .height = h,
