@@ -2,7 +2,6 @@
 #include "VulkanContext.h"
 #include "Core/Memory/Memory.h"
 #include "Core/Logger.h"
-#include <stdlib.h>
 
 void destroy_swapchain(VulkanContext *vkcontext, Swapchain *swapchain) {
   if (!vkcontext || !swapchain) {
@@ -14,10 +13,12 @@ void destroy_swapchain(VulkanContext *vkcontext, Swapchain *swapchain) {
     }
   }
   vkDestroySwapchainKHR(vkcontext->logical_dev, swapchain->swapchain_handle, NULL);
+  // Save Number of images
+  u32 n_imgs = swapchain->n_imgs;
+  mem_free(swapchain->images, swapchain->n_imgs * sizeof(*swapchain->images));
+  mem_free(swapchain->images_views, swapchain->n_imgs * sizeof(*swapchain->images_views));
 
   swapchain->swapchain_handle = VK_NULL_HANDLE;
-  free(swapchain->images);
-  free(swapchain->images_views);
   swapchain->images = NULL;
   swapchain->images_views = NULL;
   swapchain->n_imgs = 0;
@@ -123,8 +124,10 @@ void create_swapchain(VulkanContext *vkcontext, Swapchain *o_swapchain, u32 w, u
     // Tell vulkan that they are seperate
     swapchain_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
   }
-  free(info.surf_fmts);
-  free(info.surf_present_modes);
+
+  // Free unused data
+  mem_free(info.surf_fmts, info.n_fmts * sizeof(*info.surf_fmts));
+  mem_free(info.surf_present_modes, info.n_present_modes * sizeof(*info.surf_present_modes));
   info.surf_fmts = NULL;
   info.surf_present_modes = NULL;
 

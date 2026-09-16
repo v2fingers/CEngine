@@ -127,8 +127,8 @@ void create_graphics_pipeline(VulkanContext *vkcontext, GraphicsPipeline *gpu_pi
       .pushConstantRangeCount = 0,
   };
 
-  mem_free(vert_shader.data, sizeof(vert_shader.data));
-  mem_free(frag_shader.data, sizeof(frag_shader.data));
+  mem_free(vert_shader.data, vert_shader.size);
+  mem_free(frag_shader.data, frag_shader.size);
   vkDestroyShaderModule(vkcontext->logical_dev, vert_shader_module, NULL);
   vkDestroyShaderModule(vkcontext->logical_dev, frag_shader_module, NULL);
 
@@ -150,6 +150,7 @@ static void read_shader(const char *filename, ShaderData *shader) {
   pFile = fopen(filename, "rb");
   if (pFile == NULL) {
     LOG_ERROR("Failed to open %s", filename);
+    return;
   }
 
   fseek(pFile, 0L, SEEK_END);
