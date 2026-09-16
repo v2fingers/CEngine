@@ -9,6 +9,7 @@ void renderer_init(Renderer *renderer, Window *window) {
   pick_phys_dev(&renderer->vkcontext);
   create_logical_dev(&renderer->vkcontext);
   create_swapchain(&renderer->vkcontext, &renderer->swapchain, window->Width, window->Height);
+  create_render_pass(&renderer->vkcontext, &renderer->swapchain, &renderer->gpu_pipeline);
   create_graphics_pipeline(&renderer->vkcontext, &renderer->gpu_pipeline);
 }
 
