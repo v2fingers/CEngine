@@ -13,6 +13,7 @@ typedef struct swapchain {
   VkFormat swapchain_fmt;
   VkSurfaceFormatKHR surf_fmt;
   VkPresentModeKHR surf_present_mode;
+  VkFramebuffer *framebuffers;
 } Swapchain;
 
 typedef struct swapchain_info {
@@ -25,6 +26,9 @@ typedef struct swapchain_info {
 
 void create_swapchain(VulkanContext *vkcontext, Swapchain *swapchain, u32 w, u32 h);
 void destroy_swapchain(VulkanContext *vkcontext, Swapchain *swapchain);
+
+void create_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain, GraphicsPipeline *gpu_pipeline);
+void destroy_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain);
 
 static void get_swapchain_info(VulkanContext *vkcontext, SwapchainInfo *o_info);
 static VkSurfaceFormatKHR get_swapchain_format(VkSurfaceFormatKHR *fmts, u32 n_fmts);

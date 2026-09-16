@@ -1,5 +1,4 @@
 #include "Swapchain.h"
-#include "VulkanContext.h"
 #include "Core/Memory/Memory.h"
 #include "Core/Logger.h"
 
@@ -22,6 +21,135 @@ void destroy_swapchain(VulkanContext *vkcontext, Swapchain *swapchain) {
   swapchain->images = NULL;
   swapchain->images_views = NULL;
   swapchain->n_imgs = 0;
+}
+
+void create_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain, GraphicsPipeline *gpu_pipeline) {
+  swapchain->framebuffers = mem_calloc(swapchain->n_imgs, sizeof(VkFramebuffer));
+
+  for (u32 i = 0; i < swapchain->n_imgs; i++) {
+    VkImageView attachments[] = {swapchain->images_views[i]};
+
+    VkFramebufferCreateInfo framebuffer_info = {
+        .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+        .renderPass = gpu_pipeline->render_pass,
+        .attachmentCount = 1,
+        .pAttachments = attachments,
+        .width = swapchain->dim.width,
+        .height = swapchain->dim.height,
+        .layers = 1,
+    };
+
+    if (vkCreateFramebuffer(vkcontext->logical_dev, &framebuffer_info, NULL, &swapchain->framebuffers[i]) != VK_SUCCESS) {
+      LOG_ERROR("Failed to create Vulkan framebuffer");
+    }
+    LOG_INFO("Created Vulkan framebuffer");
+  }
+}
+
+void destroy_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain) {
+  for (u32 i = 0; i < swapchain->n_imgs; i++) {
+    vkDestroyFramebuffer(vkcontext->logical_dev, swapchain->framebuffers[i], NULL);
+  }
+}
+
+void create_swapchain(VulkanContext *vkcontext, Swapchain *swapchain, u32 w, u32 h) {
+  // Get the info about swapchain
+  SwapchainInfo info;
+  get_swapchain_info(vkcontext, &info);
+  VkSurfaceFormatKHR fmt = get_swapchain_format(info.surf_fmts, info.n_fmts);
+  VkPresentModeKHR mode = get_swapchain_present_mode(info.surf_present_modes, info.n_present_modes);
+  VkExtent2D extent = get_swapchain_extent(&info.surf_caps, w, h);
+
+  // One image extra
+  u32 n_imgs = info.surf_caps.minImageCount + 1;
+  // Dont exceed Vulkan max swapchain image count
+  if (info.surf_caps.maxImageCount > 0 && n_imgs > info.surf_caps.maxImageCount) {
+    n_imgs = info.surf_caps.maxImageCount;
+  }
+
+  // https://docs.vulkan.org/refpages/latest/refpages/source/VkSwapchainCreateInfoKHR.html
+  VkSwapchainCreateInfoKHR swapchain_info = {
+      .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+      .surface = vkcontext->surface,
+      .minImageCount = n_imgs,
+      .imageFormat = fmt.format,
+      .imageExtent = extent,
+      .imageColorSpace = fmt.colorSpace,
+      .presentMode = mode,
+      .preTransform = info.surf_caps.currentTransform,
+      .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+      .clipped = VK_TRUE,
+      .imageArrayLayers = 1,
+      .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+  };
+
+  // Check if sharing queues
+  if (vkcontext->graphics_queue_family_index != vkcontext->present_queue_family_index) {
+    // Tell vulkan that they are concurrent
+    swapchain_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+    swapchain_info.queueFamilyIndexCount = 2;
+    u32 families[2] = {
+        vkcontext->graphics_queue_family_index,
+        vkcontext->present_queue_family_index,
+    };
+    swapchain_info.pQueueFamilyIndices = families;
+  } else {
+    // Tell vulkan that they are seperate
+    swapchain_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+  }
+
+  // Free unused data
+  mem_free(info.surf_fmts, info.n_fmts * sizeof(*info.surf_fmts));
+  mem_free(info.surf_present_modes, info.n_present_modes * sizeof(*info.surf_present_modes));
+  info.surf_fmts = NULL;
+  info.surf_present_modes = NULL;
+
+  // Create the swapchain
+  if (vkCreateSwapchainKHR(vkcontext->logical_dev, &swapchain_info, NULL, &swapchain->swapchain_handle) != VK_SUCCESS) {
+    LOG_ERROR("Failed to create Vulkan swapchain")
+  }
+  // Get the number of images that will be rendered too
+  vkGetSwapchainImagesKHR(vkcontext->logical_dev, swapchain->swapchain_handle, &swapchain->n_imgs, NULL);
+  // Get the images that will be rendered too
+  swapchain->images = mem_calloc(swapchain->n_imgs, sizeof(VkImage));
+  vkGetSwapchainImagesKHR(vkcontext->logical_dev, swapchain->swapchain_handle, &swapchain->n_imgs, swapchain->images);
+
+  // Save the choices of presentation mode, dimensions etc
+  swapchain->images_views = mem_calloc(swapchain->n_imgs, sizeof(VkImageView));
+  swapchain->surf_present_mode = mode;
+  swapchain->swapchain_fmt = fmt.format;
+  swapchain->surf_fmt = fmt;
+  swapchain->dim = extent;
+
+  // Create an image view for each swapchain image
+  for (u32 i = 0; i < swapchain->n_imgs; i++) {
+    // https://docs.vulkan.org/refpages/latest/refpages/source/VkImageViewCreateInfo.html
+    const VkImageViewCreateInfo info = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .image = swapchain->images[i],
+        .format = swapchain->swapchain_fmt,
+        .components =
+            {
+                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+            },
+        .subresourceRange =
+            {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .levelCount = 1,
+                .layerCount = 1,
+            },
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+    };
+    // Create the image views
+    if (vkCreateImageView(vkcontext->logical_dev, &info, NULL, &swapchain->images_views[i]) != VK_SUCCESS) {
+      LOG_ERROR("Failed to create Vulkan swapchain");
+    }
+  }
+
+  LOG_INFO("Created Vulkan swapchain");
 }
 
 static void get_swapchain_info(VulkanContext *vkcontext, SwapchainInfo *o_info) {
@@ -77,104 +205,4 @@ static VkExtent2D get_swapchain_extent(VkSurfaceCapabilitiesKHR *caps, u32 w, u3
   extent.height = MAX(caps->minImageExtent.height, extent.height);
 
   return extent;
-}
-
-void create_swapchain(VulkanContext *vkcontext, Swapchain *o_swapchain, u32 w, u32 h) {
-  // Get the info about swapchain
-  SwapchainInfo info;
-  get_swapchain_info(vkcontext, &info);
-  VkSurfaceFormatKHR fmt = get_swapchain_format(info.surf_fmts, info.n_fmts);
-  VkPresentModeKHR mode = get_swapchain_present_mode(info.surf_present_modes, info.n_present_modes);
-  VkExtent2D extent = get_swapchain_extent(&info.surf_caps, w, h);
-
-  // One image extra
-  u32 n_imgs = info.surf_caps.minImageCount + 1;
-  // Dont exceed Vulkan max swapchain image count
-  if (info.surf_caps.maxImageCount > 0 && n_imgs > info.surf_caps.maxImageCount) {
-    n_imgs = info.surf_caps.maxImageCount;
-  }
-
-  // https://docs.vulkan.org/refpages/latest/refpages/source/VkSwapchainCreateInfoKHR.html
-  VkSwapchainCreateInfoKHR swapchain_info = {
-      .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-      .surface = vkcontext->surface,
-      .minImageCount = n_imgs,
-      .imageFormat = fmt.format,
-      .imageExtent = extent,
-      .imageColorSpace = fmt.colorSpace,
-      .presentMode = mode,
-      .preTransform = info.surf_caps.currentTransform,
-      .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-      .clipped = VK_TRUE,
-      .imageArrayLayers = 1,
-      .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-  };
-
-  // Check if sharing queues
-  if (vkcontext->graphics_queue_family_index != vkcontext->present_queue_family_index) {
-    // Tell vulkan that they are concurrent
-    swapchain_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-    swapchain_info.queueFamilyIndexCount = 2;
-    u32 families[2] = {
-        vkcontext->graphics_queue_family_index,
-        vkcontext->present_queue_family_index,
-    };
-    swapchain_info.pQueueFamilyIndices = families;
-  } else {
-    // Tell vulkan that they are seperate
-    swapchain_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-  }
-
-  // Free unused data
-  mem_free(info.surf_fmts, info.n_fmts * sizeof(*info.surf_fmts));
-  mem_free(info.surf_present_modes, info.n_present_modes * sizeof(*info.surf_present_modes));
-  info.surf_fmts = NULL;
-  info.surf_present_modes = NULL;
-
-  // Create the swapchain
-  if (vkCreateSwapchainKHR(vkcontext->logical_dev, &swapchain_info, NULL, &o_swapchain->swapchain_handle) != VK_SUCCESS) {
-    LOG_ERROR("Failed to create Vulkan swapchain")
-  }
-  // Get the number of images that will be rendered too
-  vkGetSwapchainImagesKHR(vkcontext->logical_dev, o_swapchain->swapchain_handle, &o_swapchain->n_imgs, NULL);
-  // Get the images that will be rendered too
-  o_swapchain->images = mem_calloc(o_swapchain->n_imgs, sizeof(VkImage));
-  vkGetSwapchainImagesKHR(vkcontext->logical_dev, o_swapchain->swapchain_handle, &o_swapchain->n_imgs, o_swapchain->images);
-
-  // Save the choices of presentation mode, dimensions etc
-  o_swapchain->images_views = mem_calloc(o_swapchain->n_imgs, sizeof(VkImageView));
-  o_swapchain->surf_present_mode = mode;
-  o_swapchain->swapchain_fmt = fmt.format;
-  o_swapchain->surf_fmt = fmt;
-  o_swapchain->dim = extent;
-
-  // Create an image view for each swapchain image
-  for (u32 i = 0; i < o_swapchain->n_imgs; i++) {
-    // https://docs.vulkan.org/refpages/latest/refpages/source/VkImageViewCreateInfo.html
-    const VkImageViewCreateInfo info = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image = o_swapchain->images[i],
-        .format = o_swapchain->swapchain_fmt,
-        .components =
-            {
-                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-            },
-        .subresourceRange =
-            {
-                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                .levelCount = 1,
-                .layerCount = 1,
-            },
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
-    };
-    // Create the image views
-    if (vkCreateImageView(vkcontext->logical_dev, &info, NULL, &o_swapchain->images_views[i]) != VK_SUCCESS) {
-      LOG_ERROR("Failed to create Vulkan swapchain");
-    }
-  }
-
-  LOG_INFO("Created Vulkan swapchain");
 }
