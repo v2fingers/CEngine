@@ -12,6 +12,7 @@ typedef struct shader_data {
 typedef struct graphics_pipeline {
   VkPipelineLayout pipeline_layout;
   VkRenderPass render_pass;
+  VkPipeline graphics_pipeline;
 } GraphicsPipeline;
 
 static void read_shader(const char *filename, ShaderData *shader);

@@ -162,20 +162,45 @@ void create_graphics_pipeline(VulkanContext *vkcontext, GraphicsPipeline *gpu_pi
       .pushConstantRangeCount = 0,
   };
 
-  mem_free(vert_shader.data, vert_shader.size);
-  mem_free(frag_shader.data, frag_shader.size);
-  vkDestroyShaderModule(vkcontext->logical_dev, vert_shader_module, NULL);
-  vkDestroyShaderModule(vkcontext->logical_dev, frag_shader_module, NULL);
-
   if (vkCreatePipelineLayout(vkcontext->logical_dev, &pipeline_layout_info, NULL, &gpu_pipeline->pipeline_layout) !=
       VK_SUCCESS) {
     LOG_ERROR("Failed to create Vulkan graphics pipeline layout");
   }
 
+  VkGraphicsPipelineCreateInfo pipeline_info = {
+      .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+      .stageCount = 2, // Vertex and Fragment
+      .pStages = shader_stages,
+      .pVertexInputState = &vertex_input_info,
+      .pInputAssemblyState = &input_assembly,
+      .pViewportState = &viewport_state,
+      .pRasterizationState = &rasterizer,
+      .pMultisampleState = &multisampling,
+      .pColorBlendState = &color_blending,
+      .pDynamicState = &dynamic_state,
+      .layout = gpu_pipeline->pipeline_layout,
+      .renderPass = gpu_pipeline->render_pass,
+      .subpass = 0,
+      .basePipelineHandle = VK_NULL_HANDLE,
+      .basePipelineIndex = -1,
+      .pDepthStencilState = NULL,
+  };
+
+  if (vkCreateGraphicsPipelines(vkcontext->logical_dev, VK_NULL_HANDLE, 1, &pipeline_info, NULL,
+                                &gpu_pipeline->graphics_pipeline) != VK_SUCCESS) {
+    LOG_ERROR("Failed to create Vulkan graphics pipeline");
+  }
+
+  mem_free(vert_shader.data, vert_shader.size);
+  mem_free(frag_shader.data, frag_shader.size);
+  vkDestroyShaderModule(vkcontext->logical_dev, vert_shader_module, NULL);
+  vkDestroyShaderModule(vkcontext->logical_dev, frag_shader_module, NULL);
+
   LOG_INFO("Created Vulkan graphics pipeline");
 }
 
 void destroy_graphics_pipeline(VulkanContext *vkcontext, GraphicsPipeline *gpu_pipeline) {
+  vkDestroyPipeline(vkcontext->logical_dev, gpu_pipeline->graphics_pipeline, NULL);
   vkDestroyPipelineLayout(vkcontext->logical_dev, gpu_pipeline->pipeline_layout, NULL);
   vkDestroyRenderPass(vkcontext->logical_dev, gpu_pipeline->render_pass, NULL);
 }
