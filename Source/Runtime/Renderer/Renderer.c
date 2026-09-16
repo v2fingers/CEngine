@@ -8,13 +8,13 @@ void renderer_init(Renderer *renderer, Window *window) {
   create_surface(&renderer->vkcontext, window);
   pick_phys_dev(&renderer->vkcontext);
   create_logical_dev(&renderer->vkcontext);
-  create_swapchain(&renderer->vkcontext, &renderer->vkcontext.swapchain, window->Width, window->Height);
+  create_swapchain(&renderer->vkcontext, &renderer->swapchain, window->Width, window->Height);
   create_graphics_pipeline(&renderer->vkcontext, &renderer->gpu_pipeline);
 }
 
 void renderer_shutdown(Renderer *renderer) {
   destroy_graphics_pipeline(&renderer->vkcontext, &renderer->gpu_pipeline);
-  destroy_swapchain(&renderer->vkcontext, &renderer->vkcontext.swapchain);
+  destroy_swapchain(&renderer->vkcontext, &renderer->swapchain);
   destroy_context(&renderer->vkcontext);
 }
 

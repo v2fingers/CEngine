@@ -1,10 +1,12 @@
 #pragma once
 #include "Core/Window.h"
 #include "Renderer/GraphicsPipeline.h"
+#include "Renderer/Swapchain.h"
 #include "Renderer/VulkanContext.h"
 
 typedef struct renderer {
   VulkanContext vkcontext;
+  Swapchain swapchain;
   GraphicsPipeline gpu_pipeline;
 } Renderer;
 

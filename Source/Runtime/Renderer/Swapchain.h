@@ -1,9 +1,9 @@
 #pragma once
 #include "Defines.h"
-#include "RenderTypes.h"
+#include "VulkanContext.h"
 #include <vulkan/vulkan.h>
 
-struct swapchain {
+typedef struct swapchain {
   VkSwapchainKHR swapchain_handle;
   VkImageView *images_views;
   VkImage *images;
@@ -13,7 +13,7 @@ struct swapchain {
   VkFormat swapchain_fmt;
   VkSurfaceFormatKHR surf_fmt;
   VkPresentModeKHR surf_present_mode;
-};
+} Swapchain;
 
 typedef struct swapchain_info {
   VkSurfaceFormatKHR *surf_fmts;
