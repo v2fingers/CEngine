@@ -1,6 +1,7 @@
 #include "Swapchain.h"
 #include "Core/Memory/Memory.h"
 #include "Core/Logger.h"
+#include "Device.h"
 
 void destroy_swapchain(VulkanContext *vkcontext, Swapchain *swapchain) {
   if (!vkcontext || !swapchain) {
@@ -12,8 +13,7 @@ void destroy_swapchain(VulkanContext *vkcontext, Swapchain *swapchain) {
     }
   }
   vkDestroySwapchainKHR(vkcontext->logical_dev, swapchain->swapchain_handle, NULL);
-  // Save Number of images
-  u32 n_imgs = swapchain->n_imgs;
+
   mem_free(swapchain->images, swapchain->n_imgs * sizeof(*swapchain->images));
   mem_free(swapchain->images_views, swapchain->n_imgs * sizeof(*swapchain->images_views));
 
@@ -23,39 +23,10 @@ void destroy_swapchain(VulkanContext *vkcontext, Swapchain *swapchain) {
   swapchain->n_imgs = 0;
 }
 
-void create_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain, GraphicsPipeline *gpu_pipeline) {
-  swapchain->framebuffers = mem_calloc(swapchain->n_imgs, sizeof(VkFramebuffer));
-
-  for (u32 i = 0; i < swapchain->n_imgs; i++) {
-    VkImageView attachments[] = {swapchain->images_views[i]};
-
-    VkFramebufferCreateInfo framebuffer_info = {
-        .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-        .renderPass = gpu_pipeline->render_pass,
-        .attachmentCount = 1,
-        .pAttachments = attachments,
-        .width = swapchain->dim.width,
-        .height = swapchain->dim.height,
-        .layers = 1,
-    };
-
-    if (vkCreateFramebuffer(vkcontext->logical_dev, &framebuffer_info, NULL, &swapchain->framebuffers[i]) != VK_SUCCESS) {
-      LOG_ERROR("Failed to create Vulkan framebuffer");
-    }
-    LOG_INFO("Created Vulkan framebuffer");
-  }
-}
-
-void destroy_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain) {
-  for (u32 i = 0; i < swapchain->n_imgs; i++) {
-    vkDestroyFramebuffer(vkcontext->logical_dev, swapchain->framebuffers[i], NULL);
-  }
-}
-
 void create_swapchain(VulkanContext *vkcontext, Swapchain *swapchain, u32 w, u32 h) {
   // Get the info about swapchain
   SwapchainInfo info;
-  get_swapchain_info(vkcontext, &info);
+  query_swapchain_support(vkcontext, &info);
   VkSurfaceFormatKHR fmt = get_swapchain_format(info.surf_fmts, info.n_fmts);
   VkPresentModeKHR mode = get_swapchain_present_mode(info.surf_present_modes, info.n_present_modes);
   VkExtent2D extent = get_swapchain_extent(&info.surf_caps, w, h);
@@ -150,22 +121,6 @@ void create_swapchain(VulkanContext *vkcontext, Swapchain *swapchain, u32 w, u32
   }
 
   LOG_INFO("Created Vulkan swapchain");
-}
-
-static void get_swapchain_info(VulkanContext *vkcontext, SwapchainInfo *o_info) {
-  // https://docs.vulkan.org/refpages/latest/refpages/source/VkSurfaceCapabilitiesKHR.html
-  // Limitations/capabilities of GPU when presenting to this surface
-  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vkcontext->phys_dev, vkcontext->surface, &o_info->surf_caps);
-  // How many image formats can be used on surface
-  vkGetPhysicalDeviceSurfaceFormatsKHR(vkcontext->phys_dev, vkcontext->surface, &o_info->n_fmts, NULL);
-  o_info->surf_fmts = mem_calloc(o_info->n_fmts, sizeof(*o_info->surf_fmts));
-  vkGetPhysicalDeviceSurfaceFormatsKHR(vkcontext->phys_dev, vkcontext->surface, &o_info->n_fmts, o_info->surf_fmts);
-
-  // What are and how many ways can images be presented to surface
-  vkGetPhysicalDeviceSurfacePresentModesKHR(vkcontext->phys_dev, vkcontext->surface, &o_info->n_present_modes, NULL);
-  o_info->surf_present_modes = mem_calloc(o_info->n_present_modes, sizeof(*o_info->surf_present_modes));
-  vkGetPhysicalDeviceSurfacePresentModesKHR(vkcontext->phys_dev, vkcontext->surface, &o_info->n_present_modes,
-                                            o_info->surf_present_modes);
 }
 
 // Go through supported formats and select best

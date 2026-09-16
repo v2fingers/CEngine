@@ -1,8 +1,6 @@
 #pragma once
 #include "Core/Window.h"
-#include "Renderer/GraphicsPipeline.h"
-#include "Renderer/Swapchain.h"
-#include "Renderer/VulkanContext.h"
+#include "RenderTypes.h"
 
 typedef struct renderer {
   VulkanContext vkcontext;
