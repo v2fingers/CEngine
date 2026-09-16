@@ -1,7 +1,8 @@
-#include "VulkanContext.h"
+#include "Device.h"
 #include "Core/Logger.h"
+#include "Core/Memory/Memory.h"
 
-void destroy_context(VulkanContext *vkcontext) {
+void destroy_device(VulkanContext *vkcontext) {
   if (!vkcontext) {
     return;
   }
@@ -9,58 +10,6 @@ void destroy_context(VulkanContext *vkcontext) {
     vkDestroyDevice(vkcontext->logical_dev, NULL);
     vkcontext->logical_dev = VK_NULL_HANDLE;
   }
-  if (vkcontext->surface != VK_NULL_HANDLE) {
-    vkDestroySurfaceKHR(vkcontext->instance, vkcontext->surface, NULL);
-    vkcontext->surface = VK_NULL_HANDLE;
-  }
-  if (vkcontext->instance != VK_NULL_HANDLE) {
-    vkDestroyInstance(vkcontext->instance, NULL);
-    vkcontext->instance = VK_NULL_HANDLE;
-  }
-}
-
-void create_instance(VulkanContext *vkcontext) {
-  // Number of extentions and the data:
-  u32 n_exts;
-  const char **exts = win_get_instance_ext(&n_exts);
-  static const char *layers[] = {"VK_LAYER_KHRONOS_validation"};
-  vkcontext->n_ext = n_exts;
-  vkcontext->n_layers = 1;
-  vkcontext->exts = exts;
-  vkcontext->layers = layers;
-
-  // Set app info https://docs.vulkan.org/refpages/latest/refpages/source/VkApplicationInfo.html
-  const VkApplicationInfo app_info = {
-      .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-      .apiVersion = VK_API_VERSION_1_4,
-      .engineVersion = VK_MAKE_VERSION(0, 0, 1),
-      .pEngineName = "CustomEngine",
-      .applicationVersion = VK_MAKE_VERSION(0, 0, 1),
-      .pApplicationName = "CEngineTest",
-  };
-  // Instance info https://docs.vulkan.org/refpages/latest/refpages/source/VkInstanceCreateInfo.html
-  const VkInstanceCreateInfo create_info = {
-      .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-      .pApplicationInfo = &app_info,
-      .enabledLayerCount = vkcontext->n_layers,
-      .enabledExtensionCount = vkcontext->n_ext,
-      .ppEnabledLayerNames = vkcontext->layers,
-      .ppEnabledExtensionNames = vkcontext->exts,
-  };
-  // Try to create instance
-  if (vkCreateInstance(&create_info, NULL, &vkcontext->instance) != VK_SUCCESS) {
-    LOG_ERROR("Failed to create Vulkan instance");
-  }
-  LOG_INFO("Created Vulkan instance");
-}
-
-void create_surface(VulkanContext *vkcontext, Window *window) { // GLFW create vulkan surface
-  glfwCreateWindowSurface(vkcontext->instance, window->Window, NULL, &vkcontext->surface);
-  // If not valid then throw error
-  if (!vkcontext->surface) {
-    LOG_ERROR("Failed to create Vulkan surface");
-  }
-  LOG_INFO("Created Vulkan surface");
 }
 
 void pick_phys_dev(VulkanContext *vkcontext) {
@@ -160,4 +109,20 @@ void create_logical_dev(VulkanContext *vkcontext) {
   vkGetDeviceQueue(vkcontext->logical_dev, vkcontext->present_queue_family_index, 0, &vkcontext->present_queue);
 
   LOG_INFO("Created Vulkan logical device");
+}
+
+void query_swapchain_support(VulkanContext *vkcontext, SwapchainInfo *info) {
+  // https://docs.vulkan.org/refpages/latest/refpages/source/VkSurfaceCapabilitiesKHR.html
+  // Limitations/capabilities of GPU when presenting to this surface
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vkcontext->phys_dev, vkcontext->surface, &info->surf_caps);
+  // How many image formats can be used on surface
+  vkGetPhysicalDeviceSurfaceFormatsKHR(vkcontext->phys_dev, vkcontext->surface, &info->n_fmts, NULL);
+  info->surf_fmts = mem_calloc(info->n_fmts, sizeof(*info->surf_fmts));
+  vkGetPhysicalDeviceSurfaceFormatsKHR(vkcontext->phys_dev, vkcontext->surface, &info->n_fmts, info->surf_fmts);
+
+  // What are and how many ways can images be presented to surface
+  vkGetPhysicalDeviceSurfacePresentModesKHR(vkcontext->phys_dev, vkcontext->surface, &info->n_present_modes, NULL);
+  info->surf_present_modes = mem_calloc(info->n_present_modes, sizeof(*info->surf_present_modes));
+  vkGetPhysicalDeviceSurfacePresentModesKHR(vkcontext->phys_dev, vkcontext->surface, &info->n_present_modes,
+                                            info->surf_present_modes);
 }
