@@ -12,15 +12,15 @@ void renderer_init(Renderer *renderer, Window *window) {
   pick_phys_dev(&renderer->vkcontext);
   create_logical_dev(&renderer->vkcontext);
   create_swapchain(&renderer->vkcontext, &renderer->swapchain, window->Width, window->Height);
-  create_render_pass(&renderer->vkcontext, &renderer->swapchain, &renderer->gpu_pipeline);
-  create_pipeline(&renderer->vkcontext, &renderer->gpu_pipeline);
-  create_framebuffers(&renderer->vkcontext, &renderer->swapchain, &renderer->gpu_pipeline);
+  create_render_pass(&renderer->vkcontext, &renderer->swapchain, &renderer->frameloop);
+  create_pipeline(&renderer->vkcontext, &renderer->frameloop);
+  create_framebuffers(&renderer->vkcontext, &renderer->swapchain, &renderer->frameloop);
 }
 
 void renderer_shutdown(Renderer *renderer) {
-  destroy_framebuffers(&renderer->vkcontext, &renderer->swapchain);
-  destroy_pipeline(&renderer->vkcontext, &renderer->gpu_pipeline);
-  destroy_render_pass(&renderer->vkcontext, &renderer->gpu_pipeline);
+  destroy_framebuffers(&renderer->vkcontext, &renderer->swapchain, &renderer->frameloop);
+  destroy_pipeline(&renderer->vkcontext);
+  destroy_render_pass(&renderer->vkcontext, &renderer->frameloop);
   destroy_swapchain(&renderer->vkcontext, &renderer->swapchain);
   destroy_device(&renderer->vkcontext);
   destroy_instance(&renderer->vkcontext);

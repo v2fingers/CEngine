@@ -1,6 +1,7 @@
 #pragma once
 #include "Defines.h"
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
+#include "Renderer/RendererTypes.h"
 
 typedef struct vulkan_context {
   VkInstance instance;
@@ -15,6 +16,9 @@ typedef struct vulkan_context {
   i32 present_queue_family_index;
 
   VkQueue graphics_queue, present_queue;
+
+  VkPipelineLayout pipeline_layout;
+  VkPipeline pipeline;
 } VulkanContext;
 
 typedef struct swapchain {
@@ -27,7 +31,6 @@ typedef struct swapchain {
   VkFormat swapchain_fmt;
   VkSurfaceFormatKHR surf_fmt;
   VkPresentModeKHR surf_present_mode;
-  VkFramebuffer *framebuffers;
 } Swapchain;
 
 typedef struct swapchain_info {
@@ -43,8 +46,24 @@ typedef struct shader_data {
   char *data;
 } ShaderData;
 
-typedef struct graphics_pipeline {
-  VkPipelineLayout pipeline_layout;
+// SAMPLE NAME FOR NOW
+typedef struct my_frame {
+  VkSemaphore img_avaiable;
+  VkSemaphore *render_finished;
+
+  VkFence in_flight_fence;
+
+  VkCommandPool cmd_pool;
+  VkCommandBuffer cmd_buf;
+} MyFrame;
+// SAMPLE NAME FOR NOW
+
+typedef struct frameloop {
+  VkFramebuffer *fbs;
+  u32 n_fbs;
+
   VkRenderPass render_pass;
-  VkPipeline graphics_pipeline;
-} GraphicsPipeline;
+
+  MyFrame frames[MAX_FRAMES_IN_FLIGHT];
+  u32 frame_idx;
+} Frameloop;

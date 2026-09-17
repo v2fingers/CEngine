@@ -2,5 +2,5 @@
 #include "Defines.h"
 #include "VulkanTypes.h"
 
-void create_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain, GraphicsPipeline *gpu_pipeline);
-void destroy_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain);
+void create_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain, Frameloop *loop);
+void destroy_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain, Frameloop *loop);

@@ -2,15 +2,17 @@
 #include "Core/Memory/Memory.h"
 #include "Core/Logger.h"
 
-void create_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain, GraphicsPipeline *gpu_pipeline) {
-  swapchain->framebuffers = mem_calloc(swapchain->n_imgs, sizeof(VkFramebuffer));
+void create_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain, Frameloop *loop) {
+  loop->fbs = mem_calloc(swapchain->n_imgs, sizeof(VkFramebuffer));
 
   for (u32 i = 0; i < swapchain->n_imgs; i++) {
-    VkImageView attachments[] = {swapchain->images_views[i]};
+    VkImageView attachments[] = {
+        swapchain->images_views[i],
+    };
 
     VkFramebufferCreateInfo framebuffer_info = {
         .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-        .renderPass = gpu_pipeline->render_pass,
+        .renderPass = loop->render_pass,
         .attachmentCount = 1,
         .pAttachments = attachments,
         .width = swapchain->dim.width,
@@ -18,16 +20,16 @@ void create_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain, Graphic
         .layers = 1,
     };
 
-    if (vkCreateFramebuffer(vkcontext->logical_dev, &framebuffer_info, NULL, &swapchain->framebuffers[i]) != VK_SUCCESS) {
+    if (vkCreateFramebuffer(vkcontext->logical_dev, &framebuffer_info, NULL, &loop->fbs[i]) != VK_SUCCESS) {
       LOG_ERROR("Failed to create Vulkan framebuffer");
     }
     LOG_INFO("Created Vulkan framebuffer");
   }
 }
 
-void destroy_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain) {
+void destroy_framebuffers(VulkanContext *vkcontext, Swapchain *swapchain, Frameloop *loop) {
   for (u32 i = 0; i < swapchain->n_imgs; i++) {
-    vkDestroyFramebuffer(vkcontext->logical_dev, swapchain->framebuffers[i], NULL);
+    vkDestroyFramebuffer(vkcontext->logical_dev, loop->fbs[i], NULL);
   }
-  mem_free(swapchain->framebuffers, sizeof(VkFramebuffer));
+  mem_free(loop->fbs, sizeof(VkFramebuffer));
 }

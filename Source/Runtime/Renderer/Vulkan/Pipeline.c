@@ -18,12 +18,12 @@ static VkShaderModule create_shader_module(VulkanContext *vkcontext, ShaderData 
   return shader_module;
 }
 
-void destroy_pipeline(VulkanContext *vkcontext, GraphicsPipeline *gpu_pipeline) {
-  vkDestroyPipeline(vkcontext->logical_dev, gpu_pipeline->graphics_pipeline, NULL);
-  vkDestroyPipelineLayout(vkcontext->logical_dev, gpu_pipeline->pipeline_layout, NULL);
+void destroy_pipeline(VulkanContext *vkcontext) {
+  vkDestroyPipeline(vkcontext->logical_dev, vkcontext->pipeline, NULL);
+  vkDestroyPipelineLayout(vkcontext->logical_dev, vkcontext->pipeline_layout, NULL);
 }
 
-void create_pipeline(VulkanContext *vkcontext, GraphicsPipeline *gpu_pipeline) {
+void create_pipeline(VulkanContext *vkcontext, Frameloop *loop) {
   ShaderData vert_shader;
   ShaderData frag_shader;
   read_shader("../../../Assets/Shaders/shader_vert.spv", &vert_shader);
@@ -131,7 +131,7 @@ void create_pipeline(VulkanContext *vkcontext, GraphicsPipeline *gpu_pipeline) {
       .pushConstantRangeCount = 0,
   };
 
-  if (vkCreatePipelineLayout(vkcontext->logical_dev, &pipeline_layout_info, NULL, &gpu_pipeline->pipeline_layout) !=
+  if (vkCreatePipelineLayout(vkcontext->logical_dev, &pipeline_layout_info, NULL, &vkcontext->pipeline_layout) !=
       VK_SUCCESS) {
     LOG_ERROR("Failed to create Vulkan graphics pipeline layout");
   }
@@ -147,16 +147,16 @@ void create_pipeline(VulkanContext *vkcontext, GraphicsPipeline *gpu_pipeline) {
       .pMultisampleState = &multisampling,
       .pColorBlendState = &color_blending,
       .pDynamicState = &dynamic_state,
-      .layout = gpu_pipeline->pipeline_layout,
-      .renderPass = gpu_pipeline->render_pass,
+      .layout = vkcontext->pipeline_layout,
+      .renderPass = loop->render_pass,
       .subpass = 0,
       .basePipelineHandle = VK_NULL_HANDLE,
       .basePipelineIndex = -1,
       .pDepthStencilState = NULL,
   };
 
-  if (vkCreateGraphicsPipelines(vkcontext->logical_dev, VK_NULL_HANDLE, 1, &pipeline_info, NULL,
-                                &gpu_pipeline->graphics_pipeline) != VK_SUCCESS) {
+  if (vkCreateGraphicsPipelines(vkcontext->logical_dev, VK_NULL_HANDLE, 1, &pipeline_info, NULL, &vkcontext->pipeline) !=
+      VK_SUCCESS) {
     LOG_ERROR("Failed to create Vulkan graphics pipeline");
   }
 

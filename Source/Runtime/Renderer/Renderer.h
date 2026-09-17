@@ -5,7 +5,7 @@
 typedef struct renderer {
   VulkanContext vkcontext;
   Swapchain swapchain;
-  GraphicsPipeline gpu_pipeline;
+  Frameloop frameloop;
 } Renderer;
 
 void renderer_init(Renderer *renderer, Window *window);
